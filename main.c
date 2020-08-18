@@ -23,11 +23,15 @@
 
 #include <ctype.h>
 
+#ifdef ENABLE_CLI
+# include <glib.h>
+#endif
+
 #define PROGRAM_VERSION "0.1"
 
 // **************************************************** routine from aqbanking start
 
-static char RequestString[] = "280888113176100001234567041,23";   // Test Tan
+static char RequestString[101] = "280888113176100001234567041,23";   // Test Tan
 
 /* Kopie von
 aqbanking-5.99.44beta/src/libs/plugins/backends/aqhbci/tan/tan_chiptan_opt.c
@@ -563,8 +567,23 @@ int main(int argc, char **argv)
   char Cardnummber[11];
   char EndDate[5];
   char IssueDate[7];
-
-
+  
+#ifdef ENABLE_CLI
+  GString *RequestGString = g_string_new(NULL);
+  for (int i = 1; i < argc; i++) {
+    g_string_append_printf(RequestGString, "%02zu%s", strlen(argv[i]), argv[i]);
+  }
+  {
+    char TotalLen[3];
+    g_snprintf(TotalLen, 3, "%02zu", RequestGString->len);
+    g_string_prepend(RequestGString, TotalLen);
+  }
+  assert(RequestGString->len < sizeof(RequestString) / sizeof(RequestString[0]));
+  strcpy(RequestString, RequestGString->str);
+  g_string_free(RequestGString, TRUE);
+#endif
+  printf("RequestString = %s\r\n", RequestString);
+  
   /* translate challenge string to flicker code */
   cbuf = GWEN_Buffer_new(0, 256, 0, 1);
   rv = _translate((const char *)&RequestString[0], cbuf);
@@ -602,6 +621,7 @@ int main(int argc, char **argv)
     return rv;
   }
 
+#ifndef ENABLE_CLI
   HHD_LenSync = sizeof(HHD_CommandSync);
 
   /* Generate TAN and ATC for Sync Command */
@@ -617,6 +637,7 @@ int main(int argc, char **argv)
   printf("Kartennummer = %s\r\n", Cardnummber);
   printf("EndeDatum = %s\r\n", EndDate);
   printf("Ausgabedatum = %s\r\n", IssueDate);
+#endif
 
   rv = ((GetTanfromUSB_GeneratorFn)p)(HHDCommand, fullHHD_Len, &ATC, &GeneratedTAN[0], sizeof(GeneratedTAN) - 1,
                                       &Cardnummber[0], &EndDate[0], &IssueDate[0]);
@@ -625,7 +646,7 @@ int main(int argc, char **argv)
     exit(0);
   }
 
-  printf("\r\n\r\nErgebnis fuer TAN\r\n");
+  printf("Ergebnis fuer TAN\r\n");
   printf("TAN = %s\r\n", GeneratedTAN);
   printf("ATC = %d\r\n", ATC);
   printf("Kartennummer = %s\r\n", Cardnummber);
