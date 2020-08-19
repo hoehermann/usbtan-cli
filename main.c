@@ -1,12 +1,9 @@
-/***************************************************************************
-    begin       : Mon Mar 01 2004
-    copyright   : (C) 2020 by Ellebruch Herbert
-    email       :
-
- ***************************************************************************
- *          Please see toplevel file COPYING for license details           *
- ***************************************************************************/
-
+/**
+ * usbtan-cli
+ * 
+ * by Hermann Höhne hoehermann@gmx.de.
+ * Largely based on work by Ellebruch Herbert.
+ */
 
 #ifdef HAVE_CONFIG_H
 # include <config.h>
