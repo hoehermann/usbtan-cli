@@ -569,6 +569,10 @@ int main(int argc, char **argv)
   char IssueDate[7];
   
 #ifdef ENABLE_CLI
+  if (argc <= 1) {
+    printf("Leere Anfrage.\r\n");
+    exit(1);
+  }
   GString *RequestGString = g_string_new(NULL);
   for (int i = 1; i < argc; i++) {
     g_string_append_printf(RequestGString, "%02zu%s", strlen(argv[i]), argv[i]);
@@ -629,7 +633,7 @@ int main(int argc, char **argv)
                                       &Cardnummber[0], &EndDate[0], &IssueDate[0]);
   if (rv < 0) {
     printf("Fehler bei TAN Generierung\r\n");
-    exit(0);
+    exit(1);
   }
   printf("Ergebnis fuer Sync Command\r\n");
   printf("TAN = %s\r\n", GeneratedTAN);
@@ -643,7 +647,7 @@ int main(int argc, char **argv)
                                       &Cardnummber[0], &EndDate[0], &IssueDate[0]);
   if (rv < 0) {
     printf("Fehler bei TAN Generierung\r\n");
-    exit(0);
+    exit(1);
   }
 
   printf("Ergebnis fuer TAN\r\n");
