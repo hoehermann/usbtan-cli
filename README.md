@@ -1,7 +1,6 @@
 # usbtan-cli
-Request chipTAN from USB-cardreaders via libchipcard.
 
-**Note:** This does not actually work for me. Published for investigation only.
+Request chipTAN from USB-cardreaders via libchipcard.
 
 ## Usage
 
@@ -15,3 +14,10 @@ Amount must use comma for decimal point.
 Example:
 
     usbtan-cli 42424242 1234567890 3,50
+
+## Extended Usage
+
+1. Copy instructions for obtaining TAN from banking website into clipboard.
+2. Invoke `usbtan-viaclipboard`.
+3. Acknowledge data on cardreader.
+4. Clipboard is now populated with obtained TAN. Paste it into the appropriate field.
