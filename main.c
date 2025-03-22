@@ -570,13 +570,16 @@ int main(int argc, char **argv)
     printf("Leere Anfrage.\r\n");
     exit(1);
   }
+  // This targets HHD V1.3.2
+  // For details regarding the layout of this request, see "Belegungsrichtlinien für das chipTAN-Verfahren" TANve1.5 "Spezifikation der Anwendungsschnittstelle für HHD V1.4".
+  // NOTE: The first argument must be shorter than 64 bytes, else bit 6 and/or 7 might be set and that is forbidden in HHD V1.3.2.
   GString *RequestGString = g_string_new(NULL);
   for (int i = 1; i < argc; i++) {
     g_string_append_printf(RequestGString, "%02zu%s", strlen(argv[i]), argv[i]);
   }
   {
     char TotalLen[3];
-    g_snprintf(TotalLen, 3, "%02zu", RequestGString->len);
+    g_snprintf(TotalLen, 3, "%02zu", RequestGString->len); // length denoted by two bytes (not three) in HHD V1.3.2
     g_string_prepend(RequestGString, TotalLen);
   }
   assert(RequestGString->len < sizeof(RequestString) / sizeof(RequestString[0]));
